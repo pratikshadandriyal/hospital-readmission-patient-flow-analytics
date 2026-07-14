@@ -8,7 +8,7 @@
 
 *Published via Power BI Service — no login required, fully interactive*
 
-![Dashboard Preview](Screenshots/Executive%20Overview.png)
+![Dashboard Preview](Screenshots/page1_executive_overview.png)
 
 ---
 
@@ -51,13 +51,13 @@ An end-to-end analytics build tracking 9,093 hospital encounters across FY 2024-
 
 ## Dataset
 
-No public, patient-level, Indian hospital readmission dataset exists at usable scale (checked data.gov.in, PMJAY/Ayushman Bharat records, NFHS, ICMR — see `Data/DATA_DICTIONARY.md` for the full search). This dataset was purpose-built to reflect published Indian epidemiology and cost structure rather than being randomized column-by-column.
+No public, patient-level, Indian hospital readmission dataset exists at usable scale (checked data.gov.in, PMJAY/Ayushman Bharat records, NFHS, ICMR). This dataset was purpose-built to reflect published Indian epidemiology and cost structure rather than being randomized column-by-column.
 
 **3 tables — 9,093 encounters:**
 
 | Table | Rows | Description |
 |-------|------|-------------|
-| encounters_features | 9,093 | Core fact table — one row per hospital stay, with engineered features pre-baked |
+| encounters_features_powerbi | 9,093 | Core fact table — one row per hospital stay, with engineered features pre-baked |
 | patients | 7,500 | Patient demographics, city/state, insurance type |
 | doctors | 39 | Doctor details across 6 departments |
 
@@ -70,49 +70,47 @@ No public, patient-level, Indian hospital readmission dataset exists at usable s
 - A small "frequent flyer" tail (patients with 3 admissions in the year) concentrated in elderly, high-comorbidity chronic patients
 - 30-day readmission rate: 17.5% overall, ranging from 25.2% (CKD) down to 5.1% (Maternal/Neonatal)
 
-**Known limitation, stated upfront:** this is a synthetic dataset — no real patient data is used or represented. Calibration anchors come from a small number of published single-hospital Indian studies; they're directional guides, not a validated national benchmark. Full methodology in `Data/DATA_DICTIONARY.md`.
+**Known limitation, stated upfront:** this is a synthetic dataset — no real patient data is used or represented. Calibration anchors come from a small number of published single-hospital Indian studies; they're directional guides, not a validated national benchmark.
 
 ---
 
 ## Project Structure
-
-```
-Hospital-Readmission-Patient-Flow-Analytics/
+hospital-readmission-patient-flow-analytics/
 │
-├── Data/
-│   ├── patients.csv
+├── data/
 │   ├── doctors.csv
 │   ├── encounters.csv
-│   ├── encounters_features.csv
-│   └── DATA_DICTIONARY.md
+│   ├── encounters_features_powerbi.csv
+│   └── patients.csv
 │
-├── SQL/
-│   └── business_questions.sql
+├── sql/
+│   ├── 01_create_tables.sql
+│   └── 02_business_questions.sql
 │
-├── Python/
-│   ├── generate_data.py
+├── python/
 │   ├── eda.py
-│   └── EDA_FINDINGS.md
+│   └── generate_data.py
 │
-├── PowerBI/
-│   └── Hospital_Readmission_Patient_Flow_Analytics.pbix
+├── powerbi/
+│   └── hospital-readmission-patient-flow-analytics.pbix
 │
 ├── Screenshots/
-│   ├── Executive Overview.png
-│   └── Risk Drivers & High-Risk Segments.png
+│   ├── page1_executive_overview.png
+│   └── page2_risk_drivers.png
 │
 └── README.md
-```
 
 ---
 
-## SQL Business Questions
+## SQL Scripts
 
-`SQL/business_questions.sql` covers 11 questions, structured to progress from headline numbers to a composite risk model:
+**01_create_tables.sql** — schema creation for `doctors`, `patients`, and `encounters_features_powerbi`, with primary keys and referential integrity enforced at the database level.
+
+**02_business_questions.sql** — 11 business questions, structured to progress from headline numbers to a composite risk model:
 
 **Q1-Q6 — Core segmentation:** readmission rate by diagnosis category, age bucket, length-of-stay bucket, insurance type/OOP burden, department & doctor level, discharge disposition impact
 
-**Q7 — Medication complexity vs readmission**, including the confounding check later confirmed numerically in Python (r = 0.73 with comorbidity count)
+**Q7 — Medication complexity vs readmission**, including a confounding check later confirmed numerically in Python (r = 0.73 with comorbidity count)
 
 **Q8-Q9 — Self-joins and window functions:** prior-admission count per patient (self-join with a real bug caught mid-development — filtering to index stays only guaranteed the count was always zero, since a patient's second encounter is by construction always a readmission row), and days-since-last-discharge using `LAG()`
 
@@ -126,13 +124,13 @@ Every query documents the business reasoning, why it's written the way it is, an
 
 ## Python EDA
 
-`Python/eda.py` does the three things SQL can't do well: full-distribution visuals, a proper correlation matrix, and independently re-deriving two SQL results using a completely different technique, as cross-validation rather than a repeat of the same logic:
+`python/eda.py` does the three things SQL can't do well: full-distribution visuals, a proper correlation matrix, and independently re-deriving two SQL results using a completely different technique, as cross-validation rather than a repeat of the same logic:
 
 - `prior_admissions_365d` rebuilt via a sorted time-window loop (not a self-join) — matched the SQL Q8 result exactly (7,500 / 1,311 / 282 patients with 0/1/2 prior admissions)
 - The composite risk-tier score rebuilt independently with `pandas.cut` — matched SQL Q11 exactly (9.94% / 21.21% / 26.59%)
 - The Q7 confounding check: `num_medications` and `comorbidity_count` correlate at **r = 0.727** — confirming medication complexity is largely a proxy for comorbidity burden, not an independent readmission driver
 
-Full findings in `Python/EDA_FINDINGS.md`.
+`python/generate_data.py` builds the underlying synthetic dataset — see the Dataset section above for the calibration methodology.
 
 ---
 
@@ -142,7 +140,7 @@ Full findings in `Python/EDA_FINDINGS.md`.
 
 The headline numbers for hospital leadership.
 
-![Page 1](Screenshots/Executive%20Overview.png)
+![Page 1](Screenshots/page1_executive_overview.png)
 
 **KPI Cards:** Total Discharges · Readmission Rate % · Avg LOS · Total Cost · OOP % of Bill
 
@@ -159,7 +157,7 @@ The headline numbers for hospital leadership.
 
 Where readmission risk concentrates, and whether a simple score can flag it.
 
-![Page 2](Screenshots/Risk%20Drivers%20%26%20High-Risk%20Segments.png)
+![Page 2](Screenshots/page2_risk_drivers.png)
 
 **KPI Cards:** Total High-Risk Encounters · High-Risk Readmission Rate % · Frequent Flyer Cost Share % · LAMA vs Routine Uplift (pp)
 
@@ -202,23 +200,23 @@ DIVIDE([Readmitted Count], [Total Discharges]) * 100
 
 -- Total Discharges (index stays only)
 Total Discharges =
-CALCULATE(COUNTROWS(encounters_features), encounters_features[is_readmission] = 0)
+CALCULATE(COUNTROWS(encounters_features_powerbi), encounters_features_powerbi[is_readmission] = 0)
 
 -- Frequent Flyer Cost Share % -- built on the row-level is_frequent_flyer
 -- flag already precomputed in Python, not a re-derived virtual patient table
 Frequent Flyer Cost Share % =
 DIVIDE(
-    CALCULATE([Total Cost], encounters_features[is_frequent_flyer] = TRUE),
+    CALCULATE([Total Cost], encounters_features_powerbi[is_frequent_flyer] = TRUE),
     [Total Cost]
 ) * 100
 
 -- Composite risk-tier score, re-deriving SQL Q11 inside the model
 RiskPoints =
 VAR a = RELATED(patients[age])
-VAR c = encounters_features[comorbidity_count]
-VAR p = encounters_features[prior_admissions_365d]
+VAR c = encounters_features_powerbi[comorbidity_count]
+VAR p = encounters_features_powerbi[prior_admissions_365d]
 VAR ins = RELATED(patients[insurance_type])
-VAR disp = encounters_features[discharge_disposition]
+VAR disp = encounters_features_powerbi[discharge_disposition]
 RETURN
     (IF(a >= 75, 2, IF(a >= 61, 1, 0)))
     + (IF(c >= 3, 2, IF(c = 2, 1, 0)))
@@ -231,20 +229,20 @@ RETURN
 
 ## How to Run
 
-**Data generation (optional — pre-generated CSVs are already in `Data/`):**
+**Data generation (optional — pre-generated CSVs are already in `data/`):**
 1. `pip install pandas numpy` (or `pip install pandas numpy --break-system-packages` on managed environments)
-2. Run `python Python/generate_data.py` to regenerate `patients.csv`, `doctors.csv`, `encounters.csv` from scratch
-3. Run `python Python/eda.py` to regenerate `encounters_features.csv` and the EDA charts
+2. Run `python python/generate_data.py` to regenerate `patients.csv`, `doctors.csv`, `encounters.csv` from scratch
+3. Run `python python/eda.py` to regenerate `encounters_features_powerbi.csv`
 
 **SQL setup:**
 1. Open SQL Server Management Studio
-2. Import CSVs from `Data/` using SSMS Import Flat File wizard (Tasks → Import Flat File)
-3. Import in order: doctors → patients → encounters_features
-4. Run `SQL/business_questions.sql` query by query — not all at once
+2. Import CSVs from `data/` using SSMS Import Flat File wizard (Tasks → Import Flat File)
+3. Import in order: doctors → patients → encounters_features_powerbi
+4. Run `sql/01_create_tables.sql` first, then `sql/02_business_questions.sql` query by query — not all at once
 
 **Power BI:**
-1. Open `PowerBI/Hospital_Readmission_Patient_Flow_Analytics.pbix`
-2. Home → Transform data → Data source settings → point to your local `Data/encounters_features.csv`, `patients.csv`, `doctors.csv`
+1. Open `powerbi/hospital-readmission-patient-flow-analytics.pbix`
+2. Home → Transform data → Data source settings → point to your local `data/encounters_features_powerbi.csv`, `patients.csv`, `doctors.csv`
 3. Refresh data
 
 **Or view instantly without any setup:**
