@@ -1,0 +1,40 @@
+doctor_id,doctor_name,department,designation,years_experience
+D001,Dr. Sunil Tyagi,Cardiology,Associate Consultant,4
+D002,Dr. Deepak Gupta,Cardiology,Senior Consultant,25
+D003,Dr. Gaurav Pandey,Cardiology,Consultant,11
+D004,Dr. Yogesh Tomar,Cardiology,Consultant,8
+D005,Dr. Rohan Singh,Cardiology,Resident,2
+D006,Dr. Deepak Saxena,Cardiology,Resident,2
+D007,Dr. Prakash Pandey,Endocrinology,Resident,1
+D008,Dr. Meera Bansal,Endocrinology,Senior Consultant,17
+D009,Dr. Priya Yadav,Endocrinology,Consultant,8
+D010,Dr. Deepika Tyagi,Endocrinology,Consultant,10
+D011,Dr. Ankit Malik,Endocrinology,Resident,1
+D012,Dr. Vikram Choudhary,Endocrinology,Senior Consultant,29
+D013,Dr. Nisha Chopra,Pulmonology,Consultant,15
+D014,Dr. Sunita Bansal,Pulmonology,Resident,2
+D015,Dr. Anil Singh,Pulmonology,Resident,2
+D016,Dr. Shweta Chopra,Pulmonology,Resident,2
+D017,Dr. Alka Chauhan,Pulmonology,Resident,3
+D018,Dr. Amit Mishra,Pulmonology,Associate Consultant,6
+D019,Dr. Deepak Kumar,Nephrology,Associate Consultant,5
+D020,Dr. Sarita Bansal,Nephrology,Resident,3
+D021,Dr. Pooja Rathi,Nephrology,Consultant,8
+D022,Dr. Rekha Tyagi,Nephrology,Resident,2
+D023,Dr. Harish Yadav,Nephrology,Resident,3
+D024,Dr. Manoj Bansal,Nephrology,Associate Consultant,4
+D025,Dr. Sarita Pandey,Nephrology,Associate Consultant,5
+D026,Dr. Gaurav Malik,Nephrology,Consultant,13
+D027,Dr. Amit Malik,Obstetrics & Gynaecology,Resident,2
+D028,Dr. Sarita Singh,Obstetrics & Gynaecology,Associate Consultant,6
+D029,Dr. Yogesh Malik,Obstetrics & Gynaecology,Consultant,8
+D030,Dr. Mohit Agarwal,Obstetrics & Gynaecology,Resident,1
+D031,Dr. Shweta Bansal,Obstetrics & Gynaecology,Consultant,8
+D032,Dr. Sanjay Gupta,Obstetrics & Gynaecology,Resident,2
+D033,Dr. Renu Rawat,General Surgery,Resident,1
+D034,Dr. Alka Choudhary,General Surgery,Senior Consultant,24
+D035,Dr. Meera Gupta,General Surgery,Senior Consultant,27
+D036,Dr. Anjali Verma,General Surgery,Consultant,14
+D037,Dr. Rajesh Yadav,General Surgery,Resident,3
+D038,Dr. Manju Singh,General Surgery,Resident,1
+D039,Dr. Shalini Chopra,General Surgery,Consultant,10
